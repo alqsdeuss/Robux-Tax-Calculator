@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>tax rbx</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Fredoka One', sans-serif;
+    }
+
+    body {
+      background: #0d0d0d;
+      color: white;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+
+    .header {
+      font-size: 28px;
+      color: #00ff80;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap-reverse;
+    }
+
+    .box, .card {
+      background-color: rgba(0, 0, 0, 0.65);
+      padding: 24px;
+      border-radius: 20px;
+      border: 1px solid rgba(0, 255, 128, 0.2);
+      box-shadow: 0 0 12px rgba(0, 255, 128, 0.1);
+      backdrop-filter: blur(12px);
+      max-width: 350px;
+      width: 100%;
+      text-align: center;
+      flex: 1 1 300px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .text-input {
+      padding: 12px;
+      border-radius: 10px;
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 255, 128, 0.2);
+      color: white;
+      font-size: 18px;
+      text-align: center;
+      appearance: none;
+      -moz-appearance: textfield;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .calculate-button, .profile-button {
+      width: 100%;
+      background-color: rgba(0, 255, 128, 0.25);
+      border: 1px solid rgba(0, 255, 128, 0.4);
+      color: white;
+      font-size: 16px;
+      padding: 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .calculate-button:hover, .profile-button:hover {
+      background-color: rgba(0, 255, 128, 0.5);
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #00ff80;
+      display: none;
+    }
+
+    .avatar-img {
+      width: 100%;
+      border-radius: 16px;
+      margin-bottom: 12px;
+    }
+
+    .role {
+      font-size: 18px;
+      margin-bottom: 6px;
+      color: #00ff80;
+    }
+
+    .username {
+      font-size: 15px;
+      margin-bottom: 10px;
+      color: #b6fcd5;
+    }
+
+    .notification-message {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(255, 0, 0, 0.2);
+      color: #ff0000;
+      border: 1px solid rgba(255, 0, 0, 0.3);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      z-index: 9999;
+      display: none;
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    .notification-message.error {
+      background-color: rgba(255, 0, 0, 0.2);
+      color: #ff4d4d;
+      border-color: rgba(255, 0, 0, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .box, .card {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1 class="header"><i class="fa-solid fa-business-time"></i> Robux Tax Calculator</h1>
+
+  <div class="container">
+    <div class="card">
+      <div class="role">Main Website Developer</div>
+      <div class="username">@querysession on Roblox</div>
+      <img src="https://tr.rbxcdn.com/30DAY-Avatar-BCCD5F8B77D685D5F66E585CBA088731-Png/352/352/Avatar/Webp/noFilter" class="avatar-img" />
+      <a href="https://www.roblox.com/users/4493266990/profile" target="_blank">
+        <button class="profile-button"><i class="fa-solid fa-link"></i> Access</button>
+      </a>
+    </div>
+
+    <div class="box">
+      <div class="input-group">
+        <input type="number" id="robuxInput" class="text-input" placeholder="Enter Robux amount..." />
+        <button class="calculate-button" onclick="calculateRobux()">
+            <i class="fa-solid fa-circle-check"></i> Calculate After Tax
+        </button>
+      </div>
+
+      <div class="result" id="robuxResult">
+        <i class="fa-solid fa-repeat"></i>
+        You will receive: <span id="robuxOutput"></span> Robux
+      </div>
+    </div>
+  </div>
+
+  <div id="notification" class="notification-message"></div>
+
+  <script>
+    function calculateRobux() {
+      const input = document.getElementById("robuxInput").value;
+      const output = document.getElementById("robuxOutput");
+      const resultBox = document.getElementById("robuxResult");
+
+      let robux = parseFloat(input);
+      if (isNaN(robux) || robux <= 0) {
+        showNotification("Please enter a valid Robux amount", "error");
+        return;
+      }
+
+      let finalAmount = robux <= 1 ? robux : Math.floor(robux * 0.7);
+      output.textContent = finalAmount.toLocaleString();
+      resultBox.style.display = "block";
+      showNotification("Calculation complete!", "success");
+    }
+
+    function showNotification(msg, type = "success") {
+      const note = document.getElementById("notification");
+      note.textContent = msg;
+      note.className = `notification-message ${type}`;
+      note.style.display = "block";
+
+      setTimeout(() => {
+        note.style.opacity = "0";
+        setTimeout(() => {
+          note.style.display = "none";
+          note.style.opacity = "1";
+        }, 300);
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
+            
